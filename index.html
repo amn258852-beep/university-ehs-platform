@@ -322,6 +322,75 @@
         grid-template-columns: 1fr;
       }
     }
+
+    .lab-row {
+  cursor: pointer;
+  transition: background 0.2s ease;
+}
+
+.lab-row:hover {
+  background: #eef8f8;
+  border-radius: 8px;
+  padding-left: 10px;
+  padding-right: 10px;
+}
+
+.modal-overlay {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(12, 42, 61, 0.65);
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+  padding: 20px;
+}
+
+.modal {
+  background: white;
+  width: min(600px, 100%);
+  max-height: 90vh;
+  overflow-y: auto;
+  border-radius: 14px;
+  padding: 28px;
+  position: relative;
+}
+
+.modal-close {
+  position: absolute;
+  right: 18px;
+  top: 14px;
+  border: none;
+  background: transparent;
+  font-size: 25px;
+  color: #607d8b;
+  cursor: pointer;
+}
+
+.modal h2 {
+  color: #123b5d;
+  margin-bottom: 8px;
+}
+
+.modal-subtitle {
+  color: #78909c;
+  margin-bottom: 20px;
+}
+
+.detail-section {
+  margin-top: 18px;
+}
+
+.detail-section h4 {
+  color: #087f8c;
+  margin-bottom: 7px;
+}
+
+.detail-section p {
+  color: #455a64;
+  line-height: 1.6;
+}
+    
   </style>
 </head>
 
@@ -464,5 +533,103 @@
     </main>
   </div>
 
+<div class="modal-overlay" id="labModal">
+  <div class="modal">
+    <button class="modal-close" onclick="closeLaboratoryProfile()">×</button>
+
+    <h2 id="modalLabName">Laboratory</h2>
+    <div class="modal-subtitle" id="modalLabLocation"></div>
+
+    <div class="detail-section">
+      <h4>Occupancy</h4>
+      <p id="modalOccupancy"></p>
+    </div>
+
+    <div class="detail-section">
+      <h4>Main Hazards</h4>
+      <p id="modalHazards"></p>
+    </div>
+
+    <div class="detail-section">
+      <h4>Required PPE</h4>
+      <p id="modalPPE"></p>
+    </div>
+
+    <div class="detail-section">
+      <h4>Emergency Equipment</h4>
+      <p id="modalEquipment"></p>
+    </div>
+
+    <div class="detail-section">
+      <h4>Responsible Contact</h4>
+      <p id="modalContact"></p>
+    </div>
+  </div>
+</div>
+
+<script>
+  const laboratoryData = {
+    "Chemistry Lab 204": {
+      location: "Science Building",
+      occupancy: "8 / 30 people",
+      status: "Normal",
+      hazards: "Chemical substances, compressed gases, hot equipment",
+      ppe: "Safety glasses, laboratory coat, closed shoes, suitable gloves",
+      equipment: "Emergency shower, eyewash station, fire extinguisher",
+      contact: "Chemical Safety Specialist"
+    },
+
+    "Biology Lab 105": {
+      location: "Science Building",
+      occupancy: "21 / 20 people",
+      status: "Over capacity",
+      hazards: "Biological materials, sharps, laboratory chemicals",
+      ppe: "Laboratory coat, gloves, safety glasses",
+      equipment: "Eyewash station, biological spill kit, fire extinguisher",
+      contact: "Biosafety Specialist"
+    },
+
+    "Materials Lab 310": {
+      location: "Engineering Building",
+      occupancy: "6 / 25 people",
+      status: "Normal",
+      hazards: "Machinery, noise, dust, heated materials",
+      ppe: "Safety glasses, safety shoes, hearing protection",
+      equipment: "First-aid kit, fire extinguisher, emergency stop system",
+      contact: "Laboratory Safety Specialist"
+    }
+  };
+
+  document.querySelectorAll(".lab-row").forEach(function(row) {
+    row.addEventListener("click", function() {
+      const labName = row.querySelector(".lab-name").textContent.trim();
+      const lab = laboratoryData[labName];
+
+      if (!lab) return;
+
+      document.getElementById("modalLabName").textContent = labName;
+      document.getElementById("modalLabLocation").textContent = lab.location;
+      document.getElementById("modalOccupancy").textContent =
+        lab.occupancy + " — " + lab.status;
+      document.getElementById("modalHazards").textContent = lab.hazards;
+      document.getElementById("modalPPE").textContent = lab.ppe;
+      document.getElementById("modalEquipment").textContent = lab.equipment;
+      document.getElementById("modalContact").textContent = lab.contact;
+
+      document.getElementById("labModal").style.display = "flex";
+    });
+  });
+
+  function closeLaboratoryProfile() {
+    document.getElementById("labModal").style.display = "none";
+  }
+
+  document.getElementById("labModal").addEventListener("click", function(event) {
+    if (event.target === this) {
+      closeLaboratoryProfile();
+    }
+  });
+</script>
+  
 </body>
 </html>
