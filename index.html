@@ -3,10 +3,466 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
   <title>University EHS Platform</title>
+
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: Arial, sans-serif;
+    }
+
+    body {
+      background: #f3f6f8;
+      color: #17324d;
+    }
+
+    header {
+      background: #123b5d;
+      color: white;
+      padding: 22px 35px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    header h1 {
+      font-size: 22px;
+    }
+
+    header p {
+      margin-top: 5px;
+      font-size: 13px;
+      color: #c9e6eb;
+    }
+
+    .profile {
+      background: #1c587d;
+      padding: 10px 16px;
+      border-radius: 20px;
+      font-size: 13px;
+    }
+
+    .layout {
+      display: flex;
+      min-height: calc(100vh - 85px);
+    }
+
+    aside {
+      width: 230px;
+      background: white;
+      padding: 25px 15px;
+      border-right: 1px solid #dce5e9;
+    }
+
+    aside h3 {
+      font-size: 12px;
+      color: #78909c;
+      text-transform: uppercase;
+      margin: 0 12px 12px;
+    }
+
+    nav a {
+      display: block;
+      text-decoration: none;
+      color: #35556b;
+      padding: 13px 12px;
+      border-radius: 7px;
+      margin-bottom: 5px;
+      font-size: 14px;
+    }
+
+    nav a:hover,
+    nav a.active {
+      background: #e2f2f3;
+      color: #087f8c;
+      font-weight: bold;
+    }
+
+    main {
+      flex: 1;
+      padding: 30px;
+      max-width: 1500px;
+    }
+
+    .welcome {
+      margin-bottom: 25px;
+    }
+
+    .welcome h2 {
+      font-size: 28px;
+      margin-bottom: 8px;
+    }
+
+    .welcome p {
+      color: #607d8b;
+    }
+
+    .cards {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 18px;
+      margin-bottom: 28px;
+    }
+
+    .card {
+      background: white;
+      border-radius: 12px;
+      padding: 22px;
+      box-shadow: 0 3px 12px rgba(25, 60, 80, 0.07);
+      border-left: 5px solid #18a2a8;
+    }
+
+    .card.warning {
+      border-left-color: #f59e0b;
+    }
+
+    .card.danger {
+      border-left-color: #dc3545;
+    }
+
+    .card.blue {
+      border-left-color: #2474b5;
+    }
+
+    .card-label {
+      color: #78909c;
+      font-size: 13px;
+      margin-bottom: 12px;
+    }
+
+    .card-number {
+      font-size: 32px;
+      font-weight: bold;
+      color: #17324d;
+    }
+
+    .card-note {
+      color: #607d8b;
+      font-size: 12px;
+      margin-top: 8px;
+    }
+
+    .content-grid {
+      display: grid;
+      grid-template-columns: 2fr 1fr;
+      gap: 22px;
+    }
+
+    .panel {
+      background: white;
+      border-radius: 12px;
+      padding: 22px;
+      box-shadow: 0 3px 12px rgba(25, 60, 80, 0.07);
+    }
+
+    .panel h3 {
+      margin-bottom: 18px;
+      font-size: 18px;
+    }
+
+    .map {
+      height: 260px;
+      border-radius: 10px;
+      background:
+        linear-gradient(45deg, #d9e8e5 25%, transparent 25%),
+        linear-gradient(-45deg, #d9e8e5 25%, transparent 25%),
+        linear-gradient(45deg, transparent 75%, #d9e8e5 75%),
+        linear-gradient(-45deg, transparent 75%, #d9e8e5 75%);
+      background-size: 36px 36px;
+      background-position: 0 0, 0 18px, 18px -18px, -18px 0;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .building {
+      position: absolute;
+      background: #ffffff;
+      border: 2px solid #54818b;
+      border-radius: 5px;
+      padding: 14px;
+      font-size: 12px;
+      color: #23485c;
+      box-shadow: 0 2px 7px rgba(0,0,0,0.12);
+    }
+
+    .building.one {
+      left: 12%;
+      top: 20%;
+      width: 150px;
+    }
+
+    .building.two {
+      right: 13%;
+      top: 18%;
+      width: 165px;
+    }
+
+    .building.three {
+      left: 30%;
+      bottom: 14%;
+      width: 180px;
+    }
+
+    .map-legend {
+      margin-top: 15px;
+      display: flex;
+      gap: 18px;
+      font-size: 12px;
+      color: #607d8b;
+    }
+
+    .dot {
+      width: 10px;
+      height: 10px;
+      display: inline-block;
+      border-radius: 50%;
+      margin-right: 5px;
+    }
+
+    .green { background: #22a06b; }
+    .orange { background: #f59e0b; }
+    .red { background: #dc3545; }
+
+    .lab-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 14px 0;
+      border-bottom: 1px solid #edf1f2;
+    }
+
+    .lab-row:last-child {
+      border-bottom: none;
+    }
+
+    .lab-name {
+      font-weight: bold;
+      font-size: 14px;
+    }
+
+    .lab-location {
+      color: #78909c;
+      font-size: 12px;
+      margin-top: 5px;
+    }
+
+    .occupancy {
+      text-align: right;
+      font-size: 13px;
+    }
+
+    .status {
+      display: inline-block;
+      margin-top: 5px;
+      padding: 4px 8px;
+      border-radius: 12px;
+      font-size: 11px;
+    }
+
+    .status.normal {
+      background: #e4f6ed;
+      color: #177245;
+    }
+
+    .status.attention {
+      background: #fff1d6;
+      color: #9a5b00;
+    }
+
+    @media (max-width: 900px) {
+      .cards {
+        grid-template-columns: repeat(2, 1fr);
+      }
+
+      .content-grid {
+        grid-template-columns: 1fr;
+      }
+
+      aside {
+        width: 190px;
+      }
+    }
+
+    @media (max-width: 600px) {
+      header {
+        padding: 18px;
+      }
+
+      .profile {
+        display: none;
+      }
+
+      .layout {
+        display: block;
+      }
+
+      aside {
+        width: 100%;
+        padding: 12px;
+      }
+
+      nav {
+        display: flex;
+        overflow-x: auto;
+      }
+
+      nav a {
+        white-space: nowrap;
+        margin-right: 5px;
+      }
+
+      main {
+        padding: 18px;
+      }
+
+      .cards {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
 </head>
+
 <body>
-  <h1>University EHS Safety Intelligence Platform</h1>
-  <p>The platform is being developed.</p>
+
+  <header>
+    <div>
+      <h1>University EHS Platform</h1>
+      <p>Safety Intelligence and Emergency Readiness</p>
+    </div>
+
+    <div class="profile">
+      Prototype Dashboard
+    </div>
+  </header>
+
+  <div class="layout">
+
+    <aside>
+      <h3>Navigation</h3>
+
+      <nav>
+        <a href="#" class="active">Dashboard</a>
+        <a href="#">Digital Twin Map</a>
+        <a href="#">Laboratories</a>
+        <a href="#">Documents</a>
+        <a href="#">Contacts</a>
+        <a href="#">EHS Assistant</a>
+        <a href="#">Administration</a>
+      </nav>
+    </aside>
+
+    <main>
+
+      <section class="welcome">
+        <h2>EHS Overview</h2>
+        <p>Monitor campus safety information, laboratory occupancy, and emergency readiness.</p>
+      </section>
+
+      <section class="cards">
+
+        <div class="card">
+          <div class="card-label">Registered Laboratories</div>
+          <div class="card-number">48</div>
+          <div class="card-note">Across the university campus</div>
+        </div>
+
+        <div class="card blue">
+          <div class="card-label">Estimated Occupants</div>
+          <div class="card-number">126</div>
+          <div class="card-note">Based on current sample data</div>
+        </div>
+
+        <div class="card warning">
+          <div class="card-label">Laboratories Requiring Attention</div>
+          <div class="card-number">4</div>
+          <div class="card-note">Review recommended</div>
+        </div>
+
+        <div class="card danger">
+          <div class="card-label">Safety Alerts</div>
+          <div class="card-number">2</div>
+          <div class="card-note">Requires EHS review</div>
+        </div>
+
+      </section>
+
+      <section class="content-grid">
+
+        <div class="panel">
+          <h3>University EHS Digital Twin</h3>
+
+          <div class="map">
+            <div class="building one">
+              Science Building<br>
+              <span class="dot green"></span> 12 laboratories
+            </div>
+
+            <div class="building two">
+              Engineering Building<br>
+              <span class="dot orange"></span> 8 laboratories
+            </div>
+
+            <div class="building three">
+              Research Complex<br>
+              <span class="dot green"></span> 18 laboratories
+            </div>
+          </div>
+
+          <div class="map-legend">
+            <span><span class="dot green"></span>Normal</span>
+            <span><span class="dot orange"></span>Attention</span>
+            <span><span class="dot red"></span>High risk</span>
+          </div>
+        </div>
+
+        <div class="panel">
+          <h3>Laboratory Occupancy</h3>
+
+          <div class="lab-row">
+            <div>
+              <div class="lab-name">Chemistry Lab 204</div>
+              <div class="lab-location">Science Building</div>
+            </div>
+
+            <div class="occupancy">
+              8 / 30
+              <div class="status normal">Normal</div>
+            </div>
+          </div>
+
+          <div class="lab-row">
+            <div>
+              <div class="lab-name">Biology Lab 105</div>
+              <div class="lab-location">Science Building</div>
+            </div>
+
+            <div class="occupancy">
+              21 / 20
+              <div class="status attention">Over capacity</div>
+            </div>
+          </div>
+
+          <div class="lab-row">
+            <div>
+              <div class="lab-name">Materials Lab 310</div>
+              <div class="lab-location">Engineering Building</div>
+            </div>
+
+            <div class="occupancy">
+              6 / 25
+              <div class="status normal">Normal</div>
+            </div>
+          </div>
+
+        </div>
+
+      </section>
+
+    </main>
+  </div>
+
 </body>
 </html>
