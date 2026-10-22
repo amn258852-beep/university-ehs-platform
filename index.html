@@ -870,11 +870,43 @@
       }
 
       if (sectionContent[selectedSection]) {
-        mainContent.innerHTML = sectionContent[selectedSection];
-      }
+  mainContent.innerHTML = sectionContent[selectedSection];
+
+  if (selectedSection === "Laboratories") {
+    attachLaboratoryInteractions();
+  }
+}
     });
   });
+function attachLaboratoryInteractions() {
+  document.querySelectorAll(".lab-row").forEach(function(row) {
+    row.addEventListener("click", function() {
+      const labNameElement = row.querySelector(".lab-name");
 
+      if (!labNameElement) {
+        return;
+      }
+
+      const labName = labNameElement.textContent.trim();
+      const lab = laboratoryData[labName];
+
+      if (!lab) {
+        return;
+      }
+
+      document.getElementById("modalLabName").textContent = labName;
+      document.getElementById("modalLabLocation").textContent = lab.location;
+      document.getElementById("modalOccupancy").textContent =
+        lab.occupancy + " — " + lab.status;
+      document.getElementById("modalHazards").textContent = lab.hazards;
+      document.getElementById("modalPPE").textContent = lab.ppe;
+      document.getElementById("modalEquipment").textContent = lab.equipment;
+      document.getElementById("modalContact").textContent = lab.contact;
+
+      document.getElementById("labModal").style.display = "flex";
+    });
+  });
+}
   function showAssistantAnswer(type) {
     const answerBox = document.getElementById("assistantAnswer");
 
