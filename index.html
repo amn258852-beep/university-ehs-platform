@@ -366,7 +366,20 @@
   color: #607d8b;
   cursor: pointer;
 }
+.panel button {
+  background: #087f8c;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  padding: 10px 14px;
+  margin: 5px;
+  cursor: pointer;
+  font-size: 13px;
+}
 
+.panel button:hover {
+  background: #065f68;
+}
 .modal h2 {
   color: #123b5d;
   margin-bottom: 8px;
@@ -630,6 +643,249 @@
     }
   });
 </script>
-  
+  <script>
+  const mainContent = document.querySelector("main");
+  const originalDashboard = mainContent.innerHTML;
+
+  const sectionContent = {
+    "Digital Twin Map": `
+      <section class="welcome">
+        <h2>University EHS Digital Twin</h2>
+        <p>Explore buildings, laboratories, hazards, emergency equipment, and safety information.</p>
+      </section>
+
+      <section class="panel">
+        <h3>Campus Safety Map</h3>
+        <div class="map">
+          <div class="building one">
+            Science Building<br>
+            <span class="dot green"></span> Normal
+          </div>
+
+          <div class="building two">
+            Engineering Building<br>
+            <span class="dot orange"></span> Attention
+          </div>
+
+          <div class="building three">
+            Research Complex<br>
+            <span class="dot green"></span> Normal
+          </div>
+        </div>
+
+        <div class="map-legend">
+          <span><span class="dot green"></span>Normal</span>
+          <span><span class="dot orange"></span>Attention</span>
+          <span><span class="dot red"></span>High risk</span>
+        </div>
+      </section>
+    `,
+
+    "Laboratories": `
+      <section class="welcome">
+        <h2>Laboratories</h2>
+        <p>View laboratory occupancy and safety information.</p>
+      </section>
+
+      <section class="panel">
+        <h3>Registered Laboratories</h3>
+
+        <div class="lab-row">
+          <div>
+            <div class="lab-name">Chemistry Lab 204</div>
+            <div class="lab-location">Science Building</div>
+          </div>
+          <div class="occupancy">
+            8 / 30
+            <div class="status normal">Normal</div>
+          </div>
+        </div>
+
+        <div class="lab-row">
+          <div>
+            <div class="lab-name">Biology Lab 105</div>
+            <div class="lab-location">Science Building</div>
+          </div>
+          <div class="occupancy">
+            21 / 20
+            <div class="status attention">Over capacity</div>
+          </div>
+        </div>
+
+        <div class="lab-row">
+          <div>
+            <div class="lab-name">Materials Lab 310</div>
+            <div class="lab-location">Engineering Building</div>
+          </div>
+          <div class="occupancy">
+            6 / 25
+            <div class="status normal">Normal</div>
+          </div>
+        </div>
+      </section>
+    `,
+
+    "Documents": `
+      <section class="welcome">
+        <h2>EHS Documents</h2>
+        <p>Access approved environmental, health, and safety documents.</p>
+      </section>
+
+      <section class="panel">
+        <h3>Document Library</h3>
+
+        <div class="lab-row">
+          <div>
+            <div class="lab-name">Laboratory Safety Manual</div>
+            <div class="lab-location">Category: Laboratory Safety</div>
+          </div>
+          <button onclick="alert('Sample document: Laboratory Safety Manual')">
+            View
+          </button>
+        </div>
+
+        <div class="lab-row">
+          <div>
+            <div class="lab-name">Chemical Spill Procedure</div>
+            <div class="lab-location">Category: Emergency Procedures</div>
+          </div>
+          <button onclick="alert('Sample document: Chemical Spill Procedure')">
+            View
+          </button>
+        </div>
+
+        <div class="lab-row">
+          <div>
+            <div class="lab-name">Hazardous Waste Request Form</div>
+            <div class="lab-location">Category: Hazardous Waste</div>
+          </div>
+          <button onclick="alert('Sample document: Hazardous Waste Request Form')">
+            View
+          </button>
+        </div>
+      </section>
+    `,
+
+    "Contacts": `
+      <section class="welcome">
+        <h2>EHS Contacts</h2>
+        <p>Find the appropriate safety contact for your request.</p>
+      </section>
+
+      <section class="panel">
+        <h3>Contact Directory</h3>
+
+        <div class="lab-row">
+          <div>
+            <div class="lab-name">EHS Main Office</div>
+            <div class="lab-location">General EHS support</div>
+          </div>
+          <div>Ext. 0000</div>
+        </div>
+
+        <div class="lab-row">
+          <div>
+            <div class="lab-name">Chemical Safety Specialist</div>
+            <div class="lab-location">Chemical storage and disposal</div>
+          </div>
+          <div>Ext. 0001</div>
+        </div>
+
+        <div class="lab-row">
+          <div>
+            <div class="lab-name">Emergency Response</div>
+            <div class="lab-location">Urgent safety emergencies</div>
+          </div>
+          <div>Emergency Number</div>
+        </div>
+
+        <div class="lab-row">
+          <div>
+            <div class="lab-name">Facilities and Maintenance</div>
+            <div class="lab-location">Building and equipment issues</div>
+          </div>
+          <div>Ext. 0002</div>
+        </div>
+      </section>
+    `,
+
+    "EHS Assistant": `
+      <section class="welcome">
+        <h2>Controlled EHS Assistant</h2>
+        <p>Ask questions about approved university safety procedures.</p>
+      </section>
+
+      <section class="panel">
+        <h3>How can I help?</h3>
+
+        <button onclick="showAssistantAnswer('ppe')">
+          What PPE is required in a laboratory?
+        </button>
+
+        <button onclick="showAssistantAnswer('spill')">
+          What should I do after a chemical spill?
+        </button>
+
+        <button onclick="showAssistantAnswer('report')">
+          How do I report a hazard?
+        </button>
+
+        <div id="assistantAnswer" style="margin-top: 20px; color: #455a64;">
+          Select a question above.
+        </div>
+      </section>
+    `,
+
+    "Administration": `
+      <section class="welcome">
+        <h2>Administration</h2>
+        <p>Prototype administration functions.</p>
+      </section>
+
+      <section class="panel">
+        <h3>Available Management Functions</h3>
+        <p style="line-height: 1.8; color: #607d8b;">
+          Future versions will allow authorized users to update laboratories,
+          occupancy counts, documents, contacts, alerts, and map information.
+        </p>
+      </section>
+    `
+  };
+
+  document.querySelectorAll("nav a").forEach(function(link) {
+    link.addEventListener("click", function(event) {
+      event.preventDefault();
+
+      const selectedSection = link.textContent.trim();
+
+      document.querySelectorAll("nav a").forEach(function(item) {
+        item.classList.remove("active");
+      });
+
+      link.classList.add("active");
+
+      if (selectedSection === "Dashboard") {
+        mainContent.innerHTML = originalDashboard;
+        return;
+      }
+
+      if (sectionContent[selectedSection]) {
+        mainContent.innerHTML = sectionContent[selectedSection];
+      }
+    });
+  });
+
+  function showAssistantAnswer(type) {
+    const answerBox = document.getElementById("assistantAnswer");
+
+    const answers = {
+      ppe: "Use the PPE specified for the laboratory activity. Typical laboratory PPE may include safety glasses, a laboratory coat, closed shoes, and suitable gloves. Consult the approved laboratory procedure or contact EHS.",
+      spill: "Keep people away from the area, alert nearby personnel, follow the approved spill procedure, and contact EHS or emergency response. Do not clean the spill unless you are trained and authorized.",
+      report: "Use the EHS reporting function or contact the EHS office. Include the location, description of the hazard, photographs if appropriate, and any immediate actions taken."
+    };
+
+    answerBox.textContent = answers[type];
+  }
+</script>
 </body>
 </html>
