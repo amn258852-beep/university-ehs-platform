@@ -177,7 +177,15 @@
       overflow: hidden;
     }
 
-    .building {
+   .building {
+  cursor: pointer;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.building:hover {
+  transform: scale(1.04);
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.25);
+}
       position: absolute;
       background: #ffffff;
       border: 2px solid #54818b;
@@ -869,12 +877,56 @@
         return;
       }
 
-      if (sectionContent[selectedSection]) {
+  if (sectionContent[selectedSection]) {
   mainContent.innerHTML = sectionContent[selectedSection];
 
   if (selectedSection === "Laboratories") {
     attachLaboratoryInteractions();
   }
+
+  if (selectedSection === "Digital Twin Map") {
+    attachBuildingInteractions();
+  }
+}
+
+  if (selectedSection === "Laboratories") {
+    attachLaboratoryInteractions();
+  }
+}
+                          function attachLaboratoryInteractions() {
+  document.querySelectorAll(".lab-row").forEach(function(row) {
+    row.addEventListener("click", function() {
+      const labNameElement = row.querySelector(".lab-name");
+
+      if (!labNameElement) {
+        return;
+      }
+
+      const labName = labNameElement.textContent.trim();
+      const lab = laboratoryData[labName];
+
+      if (!lab) {
+        return;
+      }
+
+      document.getElementById("modalLabName").textContent = labName;
+      document.getElementById("modalLabLocation").textContent = lab.location;
+      document.getElementById("modalOccupancy").textContent =
+        lab.occupancy + " — " + lab.status;
+      document.getElementById("modalHazards").textContent = lab.hazards;
+      document.getElementById("modalPPE").textContent = lab.ppe;
+      document.getElementById("modalEquipment").textContent = lab.equipment;
+      document.getElementById("modalContact").textContent = lab.contact;
+
+      document.getElementById("labModal").style.display = "flex";
+    });
+  });
+}function attachBuildingInteractions() {
+  document.querySelectorAll(".building").forEach(function(building) {
+    building.addEventListener("click", function() {
+      alert("Building safety profile will open here.");
+    });
+  });
 }
     });
   });
@@ -902,6 +954,68 @@ function attachLaboratoryInteractions() {
       document.getElementById("modalPPE").textContent = lab.ppe;
       document.getElementById("modalEquipment").textContent = lab.equipment;
       document.getElementById("modalContact").textContent = lab.contact;
+
+      document.getElementById("labModal").style.display = "flex";
+    });
+  });
+} function attachBuildingInteractions() {
+  const buildingData = {
+    "Science Building": {
+      location: "Main Science Campus",
+      occupancy: "Estimated building occupancy: 42 people",
+      status: "Normal",
+      hazards: "Chemical laboratories, biological materials, compressed gases",
+      ppe: "Laboratory coat, safety glasses, closed shoes, suitable gloves",
+      equipment: "Fire extinguishers, eyewash stations, emergency showers",
+      contact: "EHS Laboratory Safety Specialist"
+    },
+
+    "Engineering Building": {
+      location: "Engineering Campus",
+      occupancy: "Estimated building occupancy: 27 people",
+      status: "Attention required",
+      hazards: "Machinery, noise, dust, hot work, workshops",
+      ppe: "Safety glasses, safety shoes, hearing protection",
+      equipment: "First-aid kits, emergency stops, fire extinguishers",
+      contact: "EHS Occupational Safety Specialist"
+    },
+
+    "Research Complex": {
+      location: "Research Campus",
+      occupancy: "Estimated building occupancy: 57 people",
+      status: "Normal",
+      hazards: "Research chemicals, specialized equipment, biological materials",
+      ppe: "Activity-specific PPE according to laboratory procedure",
+      equipment: "Spill kits, emergency showers, eyewash stations",
+      contact: "EHS Research Safety Specialist"
+    }
+  };
+
+  document.querySelectorAll(".building").forEach(function(building) {
+    building.addEventListener("click", function() {
+      const buildingName = building.textContent
+        .split("\n")[0]
+        .trim();
+
+      const selectedBuilding = buildingData[buildingName];
+
+      if (!selectedBuilding) {
+        return;
+      }
+
+      document.getElementById("modalLabName").textContent = buildingName;
+      document.getElementById("modalLabLocation").textContent =
+        selectedBuilding.location;
+      document.getElementById("modalOccupancy").textContent =
+        selectedBuilding.occupancy + " — " + selectedBuilding.status;
+      document.getElementById("modalHazards").textContent =
+        selectedBuilding.hazards;
+      document.getElementById("modalPPE").textContent =
+        selectedBuilding.ppe;
+      document.getElementById("modalEquipment").textContent =
+        selectedBuilding.equipment;
+      document.getElementById("modalContact").textContent =
+        selectedBuilding.contact;
 
       document.getElementById("labModal").style.display = "flex";
     });
