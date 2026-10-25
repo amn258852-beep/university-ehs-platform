@@ -399,7 +399,11 @@ function buildingProfile(name) {
 
   main.innerHTML = `
     <section class="welcome">
-      <h2>${name}</h2>
+      <button class="panel button" onclick="mapPage()">
+        ← Back to Map
+      </button>
+
+      <h2 style="margin-top:20px">${name}</h2>
       <p>${building.location} • ${building.status}</p>
     </section>
 
@@ -422,11 +426,12 @@ function buildingProfile(name) {
   `;
 
   document.querySelectorAll("[data-department]").forEach(item => {
-    item.onclick = () => departmentProfile(item.dataset.department);
+    item.onclick = () =>
+      departmentProfile(item.dataset.department, name);
   });
 }
 
-function departmentProfile(name) {
+function departmentProfile(name, buildingName) {
   const departmentLabs = Object.entries(labs)
     .filter(([, lab]) => lab.department === name);
 
@@ -449,7 +454,11 @@ function departmentProfile(name) {
 
   main.innerHTML = `
     <section class="welcome">
-      <h2>${name}</h2>
+      <button class="panel button" onclick="buildingProfile('${buildingName}')">
+        ← Back to ${buildingName}
+      </button>
+
+      <h2 style="margin-top:20px">${name}</h2>
       <p>Laboratories and safety information</p>
     </section>
 
