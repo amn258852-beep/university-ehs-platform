@@ -309,7 +309,7 @@ function dashboard() {
 
 function mapHtml() {
   return `
-    <div class="map">
+    <div class="map" onclick="mapPage()">
       <div class="building one" data-building="Science Building">
         Science Building<br>
         <span class="dot green"></span>12 laboratories
@@ -653,25 +653,18 @@ function departmentProfile(name, buildingName) {
 
 function bindInteractions() {
   document.querySelectorAll("[data-lab]").forEach(item => {
-    item.onclick = () =>
+    item.onclick = () => {
       openProfile(item.dataset.lab, labs[item.dataset.lab]);
+    };
   });
 
   document.querySelectorAll("[data-building]").forEach(item => {
-    item.onclick = () =>
+    item.onclick = event => {
+      event.stopPropagation();
       buildingProfile(item.dataset.building);
+    };
   });
 }
-
-document.getElementById("closeModal").onclick = () => {
-  document.getElementById("modal").style.display = "none";
-};
-
-document.getElementById("modal").onclick = event => {
-  if (event.target.id === "modal") {
-    event.target.style.display = "none";
-  }
-};
 
 document.querySelectorAll("nav a").forEach(link => {
   link.onclick = event => {
