@@ -6,6 +6,24 @@
 <title>University EHS Platform</title>
 
 <style>
+  .login-panel {
+  max-width: 500px;
+}
+
+.login-message {
+  color: #c62828;
+  margin-top: 15px;
+  font-weight: bold;
+}
+  .assistant-answer {
+  margin-top: 20px;
+  padding: 18px;
+  background: #eef8f8;
+  border-left: 4px solid #087f8c;
+  border-radius: 8px;
+  color: #35556b;
+  line-height: 1.7;
+}
 *{box-sizing:border-box;font-family:Arial,sans-serif}
 body{margin:0;background:#f3f6f8;color:#17324d}
 header{background:#123b5d;color:#fff;padding:20px 30px;display:flex;justify-content:space-between;align-items:center}
@@ -559,6 +577,64 @@ function renderLaboratoryResults() {
 
   bindInteractions();
 }
+  function ehsAssistantPage() {
+  main.innerHTML = `
+    <section class="welcome">
+      <h2>Controlled EHS Assistant</h2>
+      <p>Ask questions about approved university EHS procedures.</p>
+    </section>
+
+    <section class="panel">
+      <h3>How can I help?</h3>
+
+      <button onclick="showAssistantAnswer('ppe')">
+        What PPE is required?
+      </button>
+
+      <button onclick="showAssistantAnswer('spill')">
+        What should I do after a spill?
+      </button>
+
+      <button onclick="showAssistantAnswer('report')">
+        How do I report a hazard?
+      </button>
+
+      <div id="assistantAnswer" class="assistant-answer">
+        Select a question above to view the answer.
+      </div>
+    </section>
+  `;
+}
+
+function showAssistantAnswer(type) {
+  const answerBox = document.getElementById("assistantAnswer");
+
+  const answers = {
+    ppe: `
+      <strong>Required PPE:</strong><br>
+      Wear the PPE specified for the laboratory activity. This may include
+      safety glasses, a laboratory coat, closed shoes, and suitable gloves.
+      Always follow the laboratory-specific procedure and contact EHS if you
+      are unsure.
+    `,
+
+    spill: `
+      <strong>After a spill:</strong><br>
+      Keep people away from the affected area, alert nearby personnel, and
+      follow the approved spill-response procedure. Contact EHS or emergency
+      response. Do not clean the spill unless you are trained and authorized.
+    `,
+
+    report: `
+      <strong>Reporting a hazard:</strong><br>
+      Record the location, describe the hazard, attach a photograph if
+      appropriate, and submit the report to EHS. If there is an immediate
+      danger, contact emergency response first.
+    `
+  };
+
+  answerBox.innerHTML = answers[type];
+}
   function simplePage(title, text, body) {
   main.innerHTML = `
     <section class="welcome">
@@ -586,7 +662,48 @@ function mapPage() {
 
   bindInteractions();
 }
+function adminLogin() {
+  main.innerHTML = `
+    <section class="welcome">
+      <h2>Restricted Administration</h2>
+      <p>Only approved EHS personnel may access this section.</p>
+    </section>
 
+    <section class="panel login-panel">
+      <h3>Approved Personnel Login</h3>
+
+      <label>Username</label>
+      <input id="adminUsername" type="text" placeholder="Enter username">
+
+      <label>Password</label>
+      <input id="adminPassword" type="password" placeholder="Enter password">
+
+      <button id="adminLoginButton">
+        Sign In
+      </button>
+
+      <p id="loginMessage" class="login-message"></p>
+    </section>
+  `;
+
+  document.getElementById("adminLoginButton").onclick =
+    checkAdminLogin;
+}
+
+function checkAdminLogin() {
+  const username =
+    document.getElementById("adminUsername").value.trim();
+
+  const password =
+    document.getElementById("adminPassword").value;
+
+  if (username === "Ahmed" && password === "123") {
+    administration();
+  } else {
+    document.getElementById("loginMessage").textContent =
+      "Incorrect username or password.";
+  }
+}
 function administration() {
   const laboratoryOptions = Object.keys(labs)
     .map(name => `
@@ -654,7 +771,54 @@ function administration() {
   `;
 
   loadLaboratoryIntoForm();
+  document.getElementById("resetLabButton").onclick =
+    resetSavedLaboratoryData;
+    main.innerHTML += `
+    <section class="panel" style="margin-top:22px">
+      <h3>Add New Laboratory</h3>
 
+      <label>Laboratory Name</label>
+      <input id="addLabName" type="text">
+
+      <label>Department</label>
+      <input id="addLabDepartment" type="text">
+
+      <label>Building</label>
+      <input id="addLabBuilding" type="text">
+
+      <label>Occupancy</label>
+      <input id="addLabOccupancy" type="text">
+
+      <label>Status</label>
+      <select id="addLabStatus">
+        <option value="Normal">Normal</option>
+        <option value="Over capacity">Over capacity</option>
+        <option value="Under review">Under review</option>
+        <option value="Closed">Closed</option>
+      </select>
+
+      <label>Main Hazards</label>
+      <textarea id="addLabHazards"></textarea>
+
+      <label>Required PPE</label>
+      <textarea id="addLabPpe"></textarea>
+
+      <label>Emergency Equipment</label>
+      <textarea id="addLabEquipment"></textarea>
+
+      <label>Responsible Contact</label>
+      <input id="addLabContact" type="text">
+
+      <button id="addLabButton">
+        Add Laboratory
+      </button>
+
+      <p id="addLabMessage"></p>
+    </section>
+  `;
+
+  document.getElementById("addLabButton").onclick =
+    addNewLaboratory;
   document.getElementById("editLabSelect").onchange =
     loadLaboratoryIntoForm;
 
@@ -741,7 +905,65 @@ function saveLaboratoryFromForm() {
     "ehsLaboratories",
     JSON.stringify(labs)
   );
+function addNewLaboratory() {
+  const name =
+    document.getElementById("addLabName").value.trim();
 
+  if (!name) {
+    alert("Please enter a laboratory name.");
+    return;
+  }
+
+  if (labs[name]) {
+    alert("This laboratory already exists.");
+    return;
+  }
+
+  labs[name] = {
+    department:
+      document.getElementById("addLabDepartment").value.trim(),
+
+    location:
+      document.getElementById("addLabBuilding").value.trim(),
+
+    occupancy:
+      document.getElementById("addLabOccupancy").value.trim(),
+
+    status:
+      document.getElementById("addLabStatus").value,
+
+    hazards:
+      document.getElementById("addLabHazards").value.trim(),
+
+    ppe:
+      document.getElementById("addLabPpe").value.trim(),
+
+    equipment:
+      document.getElementById("addLabEquipment").value.trim(),
+
+    contact:
+      document.getElementById("addLabContact").value.trim()
+  };
+
+  localStorage.setItem(
+    "ehsLaboratories",
+    JSON.stringify(labs)
+  );
+
+  document.getElementById("addLabMessage").textContent =
+    "Laboratory added successfully.";
+
+  document.getElementById("addLabName").value = "";
+  document.getElementById("addLabDepartment").value = "";
+  document.getElementById("addLabBuilding").value = "";
+  document.getElementById("addLabOccupancy").value = "";
+  document.getElementById("addLabHazards").value = "";
+  document.getElementById("addLabPpe").value = "";
+  document.getElementById("addLabEquipment").value = "";
+  document.getElementById("addLabContact").value = "";
+
+  refreshLaboratorySelector(name);
+}
   document.getElementById("adminMessage").textContent =
     "Laboratory information saved successfully.";
 
@@ -939,14 +1161,15 @@ document.querySelectorAll("nav a").forEach(link => {
         "Find the appropriate safety contact.",
         "<h3>Contact Directory</h3><p>EHS Main Office<br>Chemical Safety Specialist<br>Emergency Response<br>Facilities and Maintenance</p>"
       );
-    } else if (section === "EHS Assistant") {
+} else if (section === "EHS Assistant") {
+  ehsAssistantPage();
       simplePage(
         "Controlled EHS Assistant",
         "Ask questions about approved EHS procedures.",
         "<h3>How can I help?</h3><button onclick=\"alert('Use the approved laboratory procedure and contact EHS for urgent matters.')\">What PPE is required?</button><button onclick=\"alert('Keep people away, follow the spill procedure, and contact EHS.')\">What should I do after a spill?</button>"
       );
-   } else {
-  administration();
+ } else {
+  adminLogin();
 }
   };
 });
