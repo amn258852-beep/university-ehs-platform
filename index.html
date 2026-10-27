@@ -559,7 +559,18 @@ function renderLaboratoryResults() {
 
   bindInteractions();
 }
-  
+  function simplePage(title, text, body) {
+  main.innerHTML = `
+    <section class="welcome">
+      <h2>${title}</h2>
+      <p>${text}</p>
+    </section>
+
+    <section class="panel">
+      ${body}
+    </section>
+  `;
+}
 function mapPage() {
   main.innerHTML = `
     <section class="welcome">
