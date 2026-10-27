@@ -324,16 +324,70 @@ function laboratories() {
   main.innerHTML = `
     <section class="welcome">
       <h2>Laboratories</h2>
-      <p>View laboratory occupancy and safety information.</p>
+      <p>Search, filter, and sort university laboratories.</p>
     </section>
 
     <section class="panel">
-      <h3>Registered Laboratories</h3>
-      ${labRows()}
+      <div class="lab-filters">
+        <input
+          type="text"
+          id="labSearch"
+          placeholder="Search laboratory..."
+        >
+
+        <select id="buildingFilter">
+          <option value="">All Buildings</option>
+          <option value="Science Building">Science Building</option>
+          <option value="Engineering Building">Engineering Building</option>
+          <option value="Research Complex">Research Complex</option>
+        </select>
+
+        <select id="departmentFilter">
+          <option value="">All Departments</option>
+          <option value="Chemistry Department">Chemistry Department</option>
+          <option value="Biology Department">Biology Department</option>
+          <option value="Materials Engineering Department">
+            Materials Engineering Department
+          </option>
+          <option value="Research and Innovation Department">
+            Research and Innovation Department
+          </option>
+        </select>
+
+        <select id="statusFilter">
+          <option value="">All Statuses</option>
+          <option value="Normal">Normal</option>
+          <option value="Over capacity">Over capacity</option>
+        </select>
+
+        <select id="sortLabs">
+          <option value="name">Sort: Laboratory Name</option>
+          <option value="occupancy">Sort: Occupancy</option>
+          <option value="building">Sort: Building</option>
+          <option value="department">Sort: Department</option>
+        </select>
+      </div>
+
+      <div id="laboratoryResults"></div>
     </section>
   `;
 
-  bindInteractions();
+  renderLaboratoryResults();
+
+  document.getElementById("labSearch").oninput =
+    renderLaboratoryResults;
+
+  document.getElementById("buildingFilter").onchange =
+    renderLaboratoryResults;
+
+  document.getElementById("departmentFilter").onchange =
+    renderLaboratoryResults;
+
+  document.getElementById("statusFilter").onchange =
+    renderLaboratoryResults;
+
+  document.getElementById("sortLabs").onchange =
+    renderLaboratoryResults;
 }
 
 function mapPage() {
