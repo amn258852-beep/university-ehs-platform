@@ -42,7 +42,41 @@ main{flex:1;padding:30px;max-width:1500px}
 .green{background:#22a06b}
 .orange{background:#f59e0b}
 .red{background:#dc3545}
-.map-legend{margin-top:14px;display:flex;gap:16px;font-size:12px;color:#607d8b}
+.map-legend{margin-top:14px;display:flex;gap:16px;font-size:12px;color:#607d8b}.lab-filters {
+  display: grid;
+  grid-template-columns: 2fr 1fr 1fr 1fr 1fr;
+  gap: 10px;
+  margin-bottom: 22px;
+}
+
+.lab-filters input,
+.lab-filters select {
+  width: 100%;
+  padding: 11px 12px;
+  border: 1px solid #d5e0e5;
+  border-radius: 7px;
+  background: #fff;
+  color: #35556b;
+  font-size: 13px;
+}
+
+.lab-filters input:focus,
+.lab-filters select:focus {
+  outline: 2px solid #9edadd;
+  border-color: #087f8c;
+}
+
+@media(max-width:900px) {
+  .lab-filters {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media(max-width:600px) {
+  .lab-filters {
+    grid-template-columns: 1fr;
+  }
+}
 .lab-row{display:flex;justify-content:space-between;align-items:center;padding:14px 0;border-bottom:1px solid #edf1f2;cursor:pointer}
 .lab-row:hover{background:#eef8f8;padding-left:10px;padding-right:10px;border-radius:8px}
 .lab-name{font-weight:bold;font-size:14px}
@@ -390,6 +424,98 @@ function laboratories() {
     renderLaboratoryResults;
 }
 
+function renderLaboratoryResults() {
+  const searchValue =
+    document.getElementById("labSearch").value.toLowerCase();
+
+  const buildingValue =
+    document.getElementById("buildingFilter").value;
+
+  const departmentValue =
+    document.getElementById("departmentFilter").value;
+
+  const statusValue =
+    document.getElementById("statusFilter").value;
+
+  const sortValue =
+    document.getElementById("sortLabs").value;
+
+  let results = Object.entries(labs).filter(([name, lab]) => {
+    const matchesSearch =
+      name.toLowerCase().includes(searchValue) ||
+      lab.location.toLowerCase().includes(searchValue) ||
+      lab.department.toLowerCase().includes(searchValue);
+
+    const matchesBuilding =
+      !buildingValue || lab.location === buildingValue;
+
+    const matchesDepartment =
+      !departmentValue || lab.department === departmentValue;
+
+    const matchesStatus =
+      !statusValue || lab.status === statusValue;
+
+    return (
+      matchesSearch &&
+      matchesBuilding &&
+      matchesDepartment &&
+      matchesStatus
+    );
+  });
+
+  results.sort(([nameA, labA], [nameB, labB]) => {
+    if (sortValue === "occupancy") {
+      const occupancyA = parseInt(labA.occupancy);
+      const occupancyB = parseInt(labB.occupancy);
+      return occupancyB - occupancyA;
+    }
+
+    if (sortValue === "building") {
+      return labA.location.localeCompare(labB.location);
+    }
+
+    if (sortValue === "department") {
+      return labA.department.localeCompare(labB.department);
+    }
+
+    return nameA.localeCompare(nameB);
+  });
+
+  const resultsContainer =
+    document.getElementById("laboratoryResults");
+
+  if (results.length === 0) {
+    resultsContainer.innerHTML = `
+      <p style="color:#607d8b;margin-top:20px">
+        No laboratories match the selected filters.
+      </p>
+    `;
+    return;
+  }
+
+  resultsContainer.innerHTML = results.map(([name, lab]) => `
+    <div class="lab-row" data-lab="${name}">
+      <div>
+        <div class="lab-name">${name}</div>
+        <div class="lab-location">
+          ${lab.department} • ${lab.location}
+        </div>
+      </div>
+
+      <div class="occupancy">
+        ${lab.occupancy}
+        <div class="status ${
+          lab.status === "Normal" ? "normal" : "attention"
+        }">
+          ${lab.status}
+        </div>
+      </div>
+    </div>
+  `).join("");
+
+  bindInteractions();
+}
+  
 function mapPage() {
   main.innerHTML = `
     <section class="welcome">
