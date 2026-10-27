@@ -1145,6 +1145,47 @@ document.querySelectorAll("nav a").forEach(link => {
 
     if (section === "Dashboard") {
       dashboard();
+
+    } else if (section === "Laboratories") {
+      laboratories();
+
+    } else if (section === "Digital Twin Map") {
+      mapPage();
+
+    } else if (section === "Documents") {
+      simplePage(
+        "EHS Documents",
+        "Access approved safety documents.",
+        `
+          <h3>Document Library</h3>
+          <p>Sample documents will be added here.</p>
+        `
+      );
+
+    } else if (section === "Contacts") {
+      simplePage(
+        "EHS Contacts",
+        "Find the appropriate safety contact.",
+        `
+          <h3>Contact Directory</h3>
+          <p>
+            EHS Main Office<br>
+            Chemical Safety Specialist<br>
+            Emergency Response<br>
+            Facilities and Maintenance
+          </p>
+        `
+      );
+
+    } else if (section === "EHS Assistant") {
+      ehsAssistantPage();
+
+    } else if (section === "Administration") {
+      adminLogin();
+    }
+  };
+});
+      dashboard();
     } else if (section === "Laboratories") {
       laboratories();
     } else if (section === "Digital Twin Map") {
