@@ -1185,35 +1185,6 @@ document.querySelectorAll("nav a").forEach(link => {
     }
   };
 });
-      dashboard();
-    } else if (section === "Laboratories") {
-      laboratories();
-    } else if (section === "Digital Twin Map") {
-      mapPage();
-    } else if (section === "Documents") {
-      simplePage(
-        "EHS Documents",
-        "Access approved safety documents.",
-        "<h3>Document Library</h3><p>Sample documents will be added here.</p>"
-      );
-    } else if (section === "Contacts") {
-      simplePage(
-        "EHS Contacts",
-        "Find the appropriate safety contact.",
-        "<h3>Contact Directory</h3><p>EHS Main Office<br>Chemical Safety Specialist<br>Emergency Response<br>Facilities and Maintenance</p>"
-      );
-} else if (section === "EHS Assistant") {
-  ehsAssistantPage();
-      simplePage(
-        "Controlled EHS Assistant",
-        "Ask questions about approved EHS procedures.",
-        "<h3>How can I help?</h3><button onclick=\"alert('Use the approved laboratory procedure and contact EHS for urgent matters.')\">What PPE is required?</button><button onclick=\"alert('Keep people away, follow the spill procedure, and contact EHS.')\">What should I do after a spill?</button>"
-      );
- } else {
-  adminLogin();
-}
-  };
-});
 
 dashboard();
 </script>
