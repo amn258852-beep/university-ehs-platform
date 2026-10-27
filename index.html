@@ -111,6 +111,45 @@ main{flex:1;padding:30px;max-width:1500px}
   main{padding:18px}
   .cards{grid-template-columns:1fr}
 }
+  .panel label {
+  display: block;
+  margin-top: 15px;
+  margin-bottom: 6px;
+  color: #35556b;
+  font-size: 13px;
+  font-weight: bold;
+}
+
+.panel input,
+.panel select,
+.panel textarea {
+  width: 100%;
+  padding: 11px;
+  border: 1px solid #d5e0e5;
+  border-radius: 7px;
+  font-size: 13px;
+  color: #35556b;
+  background: white;
+}
+
+.panel textarea {
+  min-height: 75px;
+  resize: vertical;
+}
+
+.admin-buttons {
+  margin-top: 22px;
+}
+
+.secondary-button {
+  background: #607d8b !important;
+}
+
+#adminMessage {
+  color: #177245;
+  margin-top: 15px;
+  font-weight: bold;
+}
 </style>
 </head>
 
@@ -179,7 +218,7 @@ main{flex:1;padding:30px;max-width:1500px}
 </div>
 
 <script>
-const labs = {
+let labs = {
   "Chemistry Lab 204": {
     department: "Chemistry Department",
     location: "Science Building",
@@ -214,7 +253,7 @@ const labs = {
   }
 };
 
-const buildings = {
+let buildings = {
   "Science Building": {
     location: "Main Science Campus",
     occupancy: "Estimated occupancy: 42 people",
@@ -257,7 +296,12 @@ const buildings = {
 };
 
 const main = document.getElementById("main");
+const savedLaboratories =
+  localStorage.getItem("ehsLaboratories");
 
+if (savedLaboratories) {
+  labs = JSON.parse(savedLaboratories);
+}
 function dashboard() {
   main.innerHTML = `
     <section class="welcome">
@@ -532,19 +576,199 @@ function mapPage() {
   bindInteractions();
 }
 
-function simplePage(title, text, body) {
+function administration() {
+  const laboratoryOptions = Object.keys(labs)
+    .map(name => `
+      <option value="${name}">
+        ${name}
+      </option>
+    `)
+    .join("");
+
   main.innerHTML = `
     <section class="welcome">
-      <h2>${title}</h2>
-      <p>${text}</p>
+      <h2>Administration</h2>
+      <p>Edit laboratory information without changing the code.</p>
     </section>
 
     <section class="panel">
-      ${body}
+      <h3>Edit Laboratory</h3>
+
+      <label>Laboratory</label>
+      <select id="editLabSelect">
+        ${laboratoryOptions}
+      </select>
+
+      <label>Laboratory Name</label>
+      <input id="editLabName" type="text">
+
+      <label>Department</label>
+      <input id="editLabDepartment" type="text">
+
+      <label>Building</label>
+      <input id="editLabBuilding" type="text">
+
+      <label>Occupancy</label>
+      <input id="editLabOccupancy" type="text">
+
+      <label>Status</label>
+      <select id="editLabStatus">
+        <option value="Normal">Normal</option>
+        <option value="Over capacity">Over capacity</option>
+        <option value="Under review">Under review</option>
+        <option value="Closed">Closed</option>
+      </select>
+
+      <label>Main Hazards</label>
+      <textarea id="editLabHazards"></textarea>
+
+      <label>Required PPE</label>
+      <textarea id="editLabPpe"></textarea>
+
+      <label>Emergency Equipment</label>
+      <textarea id="editLabEquipment"></textarea>
+
+      <label>Responsible Contact</label>
+      <input id="editLabContact" type="text">
+
+      <div class="admin-buttons">
+        <button id="saveLabButton">Save Changes</button>
+        <button id="resetLabButton" class="secondary-button">
+          Reset Saved Data
+        </button>
+      </div>
+
+      <p id="adminMessage"></p>
     </section>
   `;
+
+  loadLaboratoryIntoForm();
+
+  document.getElementById("editLabSelect").onchange =
+    loadLaboratoryIntoForm;
+
+  document.getElementById("saveLabButton").onclick =
+    saveLaboratoryFromForm;
+
+  document.getElementById("resetLabButton").onclick =
+    resetSavedLaboratoryData;
+}
+function loadLaboratoryIntoForm() {
+  const selectedName =
+    document.getElementById("editLabSelect").value;
+
+  const lab = labs[selectedName];
+
+  if (!lab) {
+    return;
+  }
+
+  document.getElementById("editLabName").value = selectedName;
+  document.getElementById("editLabDepartment").value =
+    lab.department || "";
+  document.getElementById("editLabBuilding").value =
+    lab.location || "";
+  document.getElementById("editLabOccupancy").value =
+    lab.occupancy || "";
+  document.getElementById("editLabStatus").value =
+    lab.status || "Normal";
+  document.getElementById("editLabHazards").value =
+    lab.hazards || "";
+  document.getElementById("editLabPpe").value =
+    lab.ppe || "";
+  document.getElementById("editLabEquipment").value =
+    lab.equipment || "";
+  document.getElementById("editLabContact").value =
+    lab.contact || "";
 }
 
+function saveLaboratoryFromForm() {
+  const oldName =
+    document.getElementById("editLabSelect").value;
+
+  const newName =
+    document.getElementById("editLabName").value.trim();
+
+  if (!newName) {
+    alert("Please enter a laboratory name.");
+    return;
+  }
+
+  const updatedLaboratory = {
+    department:
+      document.getElementById("editLabDepartment").value.trim(),
+
+    location:
+      document.getElementById("editLabBuilding").value.trim(),
+
+    occupancy:
+      document.getElementById("editLabOccupancy").value.trim(),
+
+    status:
+      document.getElementById("editLabStatus").value,
+
+    hazards:
+      document.getElementById("editLabHazards").value.trim(),
+
+    ppe:
+      document.getElementById("editLabPpe").value.trim(),
+
+    equipment:
+      document.getElementById("editLabEquipment").value.trim(),
+
+    contact:
+      document.getElementById("editLabContact").value.trim()
+  };
+
+  if (newName !== oldName) {
+    delete labs[oldName];
+  }
+
+  labs[newName] = updatedLaboratory;
+
+  localStorage.setItem(
+    "ehsLaboratories",
+    JSON.stringify(labs)
+  );
+
+  document.getElementById("adminMessage").textContent =
+    "Laboratory information saved successfully.";
+
+  refreshLaboratorySelector(newName);
+}
+
+function refreshLaboratorySelector(selectedName) {
+  const selector =
+    document.getElementById("editLabSelect");
+
+  selector.innerHTML = Object.keys(labs)
+    .map(name => `
+      <option value="${name}">
+        ${name}
+      </option>
+    `)
+    .join("");
+
+  selector.value = selectedName;
+}
+
+function resetSavedLaboratoryData() {
+  const confirmation = confirm(
+    "Reset all saved laboratory changes?"
+  );
+
+  if (!confirmation) {
+    return;
+  }
+
+  localStorage.removeItem("ehsLaboratories");
+
+  alert(
+    "Saved laboratory changes have been removed. Refresh the page to restore the original sample data."
+  );
+
+  location.reload();
+}
 function openProfile(name, data) {
   document.getElementById("mName").textContent = name;
 
@@ -665,7 +889,15 @@ function bindInteractions() {
     };
   });
 }
+document.getElementById("closeModal").onclick = function() {
+  document.getElementById("modal").style.display = "none";
+};
 
+document.getElementById("modal").onclick = function(event) {
+  if (event.target.id === "modal") {
+    document.getElementById("modal").style.display = "none";
+  }
+};
 document.querySelectorAll("nav a").forEach(link => {
   link.onclick = event => {
     event.preventDefault();
@@ -702,13 +934,9 @@ document.querySelectorAll("nav a").forEach(link => {
         "Ask questions about approved EHS procedures.",
         "<h3>How can I help?</h3><button onclick=\"alert('Use the approved laboratory procedure and contact EHS for urgent matters.')\">What PPE is required?</button><button onclick=\"alert('Keep people away, follow the spill procedure, and contact EHS.')\">What should I do after a spill?</button>"
       );
-    } else {
-      simplePage(
-        "Administration",
-        "Prototype administration functions.",
-        "<h3>Management Functions</h3><p>Laboratory, occupancy, document, contact, and alert management will be added later.</p>"
-      );
-    }
+   } else {
+  administration();
+}
   };
 });
 
