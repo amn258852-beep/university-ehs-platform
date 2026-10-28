@@ -6,6 +6,39 @@
 <title>University EHS Platform</title>
 
 <style>
+  .admin-choice-panel button {
+  margin-right: 10px;
+  min-width: 160px;
+}
+
+.admin-form {
+  margin-top: 22px;
+}
+
+.admin-form label {
+  display: block;
+  margin-top: 15px;
+  margin-bottom: 6px;
+  color: #35556b;
+  font-weight: bold;
+  font-size: 13px;
+}
+
+.admin-form input,
+.admin-form select,
+.admin-form textarea {
+  width: 100%;
+  padding: 11px;
+  border: 1px solid #d5e0e5;
+  border-radius: 7px;
+  font-size: 13px;
+}
+
+.admin-form textarea {
+  min-height: 75px;
+  resize: vertical;
+}
+  
   .login-panel {
   max-width: 500px;
 }
@@ -371,8 +404,8 @@ function dashboard() {
 
 function mapHtml() {
   return `
-    <div class="map" onclick="mapPage()">
-      <div class="building one" data-building="Science Building">
+<div class="map" onclick="openDigitalTwinMap()">
+<div class="building one" data-building="Science Building">
         Science Building<br>
         <span class="dot green"></span>12 laboratories
       </div>
@@ -647,6 +680,17 @@ function showAssistantAnswer(type) {
     </section>
   `;
 }
+  function openDigitalTwinMap() {
+  document.querySelectorAll("nav a").forEach(item => {
+    item.classList.remove("active");
+  });
+
+  const mapLink =
+    document.querySelector('[data-section="Digital Twin Map"]');
+
+  mapLink.classList.add("active");
+  mapPage();
+}
 function mapPage() {
   main.innerHTML = `
     <section class="welcome">
@@ -705,6 +749,34 @@ function checkAdminLogin() {
   }
 }
 function administration() {
+  main.innerHTML = `
+    <section class="welcome">
+      <h2>Administration</h2>
+      <p>Manage laboratory information.</p>
+    </section>
+
+    <section class="panel admin-choice-panel">
+      <h3>Laboratory Management</h3>
+
+      <button id="showAddLabButton">
+        Add Laboratory
+      </button>
+
+      <button id="showEditLabButton">
+        Edit Laboratory
+      </button>
+    </section>
+
+    <section id="adminFormArea"></section>
+  `;
+
+  document.getElementById("showAddLabButton").onclick =
+    showAddLaboratoryForm;
+
+  document.getElementById("showEditLabButton").onclick =
+    showEditLaboratoryForm;
+}
+  function showEditLaboratoryForm() {
   const laboratoryOptions = Object.keys(labs)
     .map(name => `
       <option value="${name}">
@@ -713,16 +785,11 @@ function administration() {
     `)
     .join("");
 
-  main.innerHTML = `
-    <section class="welcome">
-      <h2>Administration</h2>
-      <p>Edit laboratory information without changing the code.</p>
-    </section>
+  document.getElementById("adminFormArea").innerHTML = `
+    <section class="panel admin-form">
+      <h3>Edit Existing Laboratory</h3>
 
-    <section class="panel">
-      <h3>Edit Laboratory</h3>
-
-      <label>Laboratory</label>
+      <label>Select Laboratory</label>
       <select id="editLabSelect">
         ${laboratoryOptions}
       </select>
@@ -759,22 +826,25 @@ function administration() {
       <label>Responsible Contact</label>
       <input id="editLabContact" type="text">
 
-      <div class="admin-buttons">
-        <button id="saveLabButton">Save Changes</button>
-        <button id="resetLabButton" class="secondary-button">
-          Reset Saved Data
-        </button>
-      </div>
+      <button id="saveLabButton">
+        Save Changes
+      </button>
 
-      <p id="adminMessage"></p>
+      <p id="editLabMessage"></p>
     </section>
   `;
 
   loadLaboratoryIntoForm();
-  document.getElementById("resetLabButton").onclick =
-    resetSavedLaboratoryData;
-    main.innerHTML += `
-    <section class="panel" style="margin-top:22px">
+
+  document.getElementById("editLabSelect").onchange =
+    loadLaboratoryIntoForm;
+
+  document.getElementById("saveLabButton").onclick =
+    saveLaboratoryFromForm;
+}
+  function showAddLaboratoryForm() {
+  document.getElementById("adminFormArea").innerHTML = `
+    <section class="panel admin-form">
       <h3>Add New Laboratory</h3>
 
       <label>Laboratory Name</label>
@@ -819,14 +889,6 @@ function administration() {
 
   document.getElementById("addLabButton").onclick =
     addNewLaboratory;
-  document.getElementById("editLabSelect").onchange =
-    loadLaboratoryIntoForm;
-
-  document.getElementById("saveLabButton").onclick =
-    saveLaboratoryFromForm;
-
-  document.getElementById("resetLabButton").onclick =
-    resetSavedLaboratoryData;
 }
 function loadLaboratoryIntoForm() {
   const selectedName =
